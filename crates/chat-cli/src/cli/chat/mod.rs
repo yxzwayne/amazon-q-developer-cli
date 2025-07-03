@@ -378,6 +378,8 @@ const TRUST_ALL_TEXT: &str = color_print::cstr! {"<green!>All tools are now trus
 const TOOL_BULLET: &str = " ● ";
 const CONTINUATION_LINE: &str = " ⋮ ";
 const PURPOSE_ARROW: &str = " ↳ ";
+const SUCCESS_TICK: &str = " ✓ ";
+const ERROR_EXCLAMATION: &str = " ❗ ";
 
 /// Enum used to denote the origin of a tool use event
 enum ToolUseStatus {
@@ -1579,6 +1581,10 @@ impl ChatSession {
                         },
                         OutputKind::Images(ref image) => {
                             image_blocks.extend(image.clone());
+                        },
+                        OutputKind::Mixed { ref text, ref images } => {
+                            debug!("Output is Mixed: text = {:?}, images = {}", text, images.len());
+                            image_blocks.extend(images.clone());
                         },
                     }
 

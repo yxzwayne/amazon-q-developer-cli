@@ -244,6 +244,7 @@ impl InvokeOutput {
             OutputKind::Text(s) => s.as_str(),
             OutputKind::Json(j) => j.as_str().unwrap_or_default(),
             OutputKind::Images(_) => "",
+            OutputKind::Mixed { text, .. } => text.as_str(), // Return the text part
         }
     }
 }
@@ -254,6 +255,7 @@ pub enum OutputKind {
     Text(String),
     Json(serde_json::Value),
     Images(RichImageBlocks),
+    Mixed { text: String, images: RichImageBlocks },
 }
 
 impl Default for OutputKind {
@@ -352,6 +354,50 @@ pub fn display_purpose(purpose: Option<&String>, updates: &mut impl Write) -> Re
             style::Print("\n"),
         )?;
     }
+    Ok(())
+}
+
+/// Helper function to format function results with consistent styling
+///
+/// # Parameters
+/// * `result` - The result text to display
+/// * `updates` - The output to write to
+/// * `is_error` - Whether this is an error message (changes formatting)
+/// * `use_bullet` - Whether to use a bullet point instead of a tick/exclamation
+pub fn queue_function_result(result: &str, updates: &mut impl Write, is_error: bool, use_bullet: bool) -> Result<()> {
+    let lines = result.lines().collect::<Vec<_>>();
+
+    // Determine symbol and color
+    let (symbol, color) = match (is_error, use_bullet) {
+        (true, _) => (super::ERROR_EXCLAMATION, Color::Red),
+        (false, true) => (super::TOOL_BULLET, Color::Reset),
+        (false, false) => (super::SUCCESS_TICK, Color::Green),
+    };
+
+    queue!(updates, style::Print("\n"))?;
+
+    // Print first line with symbol
+    if let Some(first_line) = lines.first() {
+        queue!(
+            updates,
+            style::SetForegroundColor(color),
+            style::Print(symbol),
+            style::ResetColor,
+            style::Print(first_line),
+            style::Print("\n"),
+        )?;
+    }
+
+    // Print remaining lines with indentation
+    for line in lines.iter().skip(1) {
+        queue!(
+            updates,
+            style::Print("   "), // 3 spaces for alignment
+            style::Print(line),
+            style::Print("\n"),
+        )?;
+    }
+
     Ok(())
 }
 
