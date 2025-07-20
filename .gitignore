@@ -49,3 +49,7 @@ book/
 .env*
 
 run-build.sh
+
+# built binaries
+q
+qalt

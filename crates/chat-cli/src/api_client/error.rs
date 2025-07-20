@@ -73,6 +73,10 @@ pub enum ApiClientError {
     #[error("the context window has overflowed")]
     ContextWindowOverflow { status_code: Option<u16> },
 
+    /// Error for local model request failures
+    #[error("local model request failed: {0}")]
+    RequestFailed(String),
+
     #[error(transparent)]
     SmithyBuild(#[from] aws_smithy_types::error::operation::BuildError),
 
