@@ -7,7 +7,7 @@
     "$schema": {
       "description": "The schema to use for validating the agent",
       "type": "string"
-    }
+    },
     "name": {
       "description": "Name of the agent",
       "type": "string"
