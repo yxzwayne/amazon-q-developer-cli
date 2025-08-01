@@ -63,7 +63,7 @@ impl ToolsArgs {
                 session
                     .conversation
                     .tools
-                    .get("native")
+                    .get(&ToolOrigin::Native)
                     .and_then(|tools| {
                         tools
                             .iter()
@@ -221,7 +221,7 @@ impl ToolsSubcommand {
         let native_tool_names = session
             .conversation
             .tools
-            .get("native")
+            .get(&ToolOrigin::Native)
             .map(|tools| {
                 tools
                     .iter()
