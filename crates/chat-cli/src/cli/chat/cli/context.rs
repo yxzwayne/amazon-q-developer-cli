@@ -10,11 +10,11 @@ use crossterm::{
     style,
 };
 
-use crate::cli::chat::consts::{
-    AGENT_FORMAT_HOOKS_DOC_URL,
-    CONTEXT_FILES_MAX_SIZE,
+use crate::cli::chat::consts::AGENT_FORMAT_HOOKS_DOC_URL;
+use crate::cli::chat::context::{
+    ContextFilePath,
+    calc_max_context_files_size,
 };
-use crate::cli::chat::context::ContextFilePath;
 use crate::cli::chat::token_counter::TokenCounter;
 use crate::cli::chat::util::drop_matched_context_files;
 use crate::cli::chat::{
@@ -222,11 +222,12 @@ impl ContextSubcommand {
                         execute!(session.stderr, style::Print(format!("{}\n\n", "▔".repeat(3))),)?;
                     }
 
+                    let context_files_max_size = calc_max_context_files_size(session.conversation.model.as_deref());
                     let mut files_as_vec = profile_context_files
                         .iter()
                         .map(|(path, content, _)| (path.clone(), content.clone()))
                         .collect::<Vec<_>>();
-                    let dropped_files = drop_matched_context_files(&mut files_as_vec, CONTEXT_FILES_MAX_SIZE).ok();
+                    let dropped_files = drop_matched_context_files(&mut files_as_vec, context_files_max_size).ok();
 
                     execute!(
                         session.stderr,
@@ -240,7 +241,7 @@ impl ContextSubcommand {
                                 style::SetForegroundColor(Color::DarkYellow),
                                 style::Print(format!(
                                     "Total token count exceeds limit: {}. The following files will be automatically dropped when interacting with Q. Consider removing them. \n\n",
-                                    CONTEXT_FILES_MAX_SIZE
+                                    context_files_max_size
                                 )),
                                 style::SetForegroundColor(Color::Reset)
                             )?;
