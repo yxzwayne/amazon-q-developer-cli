@@ -77,6 +77,8 @@ pub enum Setting {
     ChatEnableHistoryHints,
     #[strum(message = "Enable the todo list feature (boolean)")]
     EnabledTodoList,
+    #[strum(message = "Enable Shift+Enter for newline (boolean)")]
+    ChatEnableShiftEnterNewline,
 }
 
 impl AsRef<str> for Setting {
@@ -112,6 +114,7 @@ impl AsRef<str> for Setting {
             Self::ChatDisableAutoCompaction => "chat.disableAutoCompaction",
             Self::ChatEnableHistoryHints => "chat.enableHistoryHints",
             Self::EnabledTodoList => "chat.enableTodoList",
+            Self::ChatEnableShiftEnterNewline => "chat.enableShiftEnterNewline",
         }
     }
 }
@@ -157,6 +160,7 @@ impl TryFrom<&str> for Setting {
             "chat.disableAutoCompaction" => Ok(Self::ChatDisableAutoCompaction),
             "chat.enableHistoryHints" => Ok(Self::ChatEnableHistoryHints),
             "chat.enableTodoList" => Ok(Self::EnabledTodoList),
+            "chat.enableShiftEnterNewline" => Ok(Self::ChatEnableShiftEnterNewline),
             _ => Err(DatabaseError::InvalidSetting(value.to_string())),
         }
     }
